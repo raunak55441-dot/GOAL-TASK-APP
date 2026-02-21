@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
-import { Text, Card, Title, Button, Chip, IconButton } from 'react-native-paper';
+import { Text, Card, Title, Chip, IconButton, Badge } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -18,7 +18,6 @@ export default function Tasks() {
 
   useEffect(() => {
     loadTasks();
-    // Check for expired tasks every minute
     const interval = setInterval(() => {
       checkExpiredTasks();
     }, 60000);
@@ -79,68 +78,100 @@ export default function Tasks() {
     return `${seconds}s`;
   };
 
+  const getPriorityColor = (task: any) => {
+    if (task.timer_seconds && task.timer_seconds < 3600) return '#ef4444'; // High
+    if (task.due_date) {
+      const dueDate = new Date(task.due_date);
+      const now = new Date();
+      const diff = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+      if (diff < 24) return '#ef4444'; // High
+      if (diff < 72) return '#f59e0b'; // Medium
+    }
+    return '#10b981'; // Low
+  };
+
+  const getPriorityLabel = (task: any) => {
+    const color = getPriorityColor(task);
+    if (color === '#ef4444') return 'HIGH';
+    if (color === '#f59e0b') return 'MEDIUM';
+    return 'LOW';
+  };
+
   const filteredTasks = tasks.filter(task => {
     if (filter === 'all') return true;
     return task.status === filter;
   });
 
+  const taskCounts = {
+    all: tasks.length,
+    pending: tasks.filter(t => t.status === 'pending').length,
+    completed: tasks.filter(t => t.status === 'completed').length,
+    failed: tasks.filter(t => t.status === 'failed').length,
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Title style={styles.title}>My Tasks</Title>
+        <View>
+          <Title style={styles.title}>My Tasks</Title>
+          <Text style={styles.subtitle}>{taskCounts.all} tasks in total</Text>
+        </View>
       </View>
 
+      {/* Filter Tabs */}
       <View style={styles.filterContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <Chip
-            selected={filter === 'all'}
+          <TouchableOpacity
+            style={[styles.filterTab, filter === 'all' && styles.filterTabActive]}
             onPress={() => setFilter('all')}
-            style={styles.filterChip}
-            textStyle={{ color: filter === 'all' ? '#fff' : '#888' }}
           >
-            All
-          </Chip>
-          <Chip
-            selected={filter === 'pending'}
+            <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>
+              All ({taskCounts.all})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.filterTab, filter === 'pending' && styles.filterTabActive]}
             onPress={() => setFilter('pending')}
-            style={styles.filterChip}
-            textStyle={{ color: filter === 'pending' ? '#fff' : '#888' }}
           >
-            Pending
-          </Chip>
-          <Chip
-            selected={filter === 'completed'}
+            <Text style={[styles.filterText, filter === 'pending' && styles.filterTextActive]}>
+              Pending ({taskCounts.pending})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.filterTab, filter === 'completed' && styles.filterTabActive]}
             onPress={() => setFilter('completed')}
-            style={styles.filterChip}
-            textStyle={{ color: filter === 'completed' ? '#fff' : '#888' }}
           >
-            Completed
-          </Chip>
-          <Chip
-            selected={filter === 'failed'}
+            <Text style={[styles.filterText, filter === 'completed' && styles.filterTextActive]}>
+              Completed ({taskCounts.completed})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.filterTab, filter === 'failed' && styles.filterTabActive]}
             onPress={() => setFilter('failed')}
-            style={styles.filterChip}
-            textStyle={{ color: filter === 'failed' ? '#fff' : '#888' }}
           >
-            Failed
-          </Chip>
+            <Text style={[styles.filterText, filter === 'failed' && styles.filterTextActive]}>
+              Failed ({taskCounts.failed})
+            </Text>
+          </TouchableOpacity>
         </ScrollView>
       </View>
 
       <ScrollView
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4CAF50" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#667eea" />}
         style={styles.scrollView}
       >
         {filteredTasks.length === 0 ? (
-          <Card style={styles.emptyCard}>
-            <Card.Content style={styles.emptyContent}>
-              <MaterialCommunityIcons name="checkbox-marked-circle-outline" size={64} color="#888" />
-              <Text style={styles.emptyText}>No tasks yet</Text>
-            </Card.Content>
-          </Card>
+          <View style={styles.emptyState}>
+            <MaterialCommunityIcons name="checkbox-marked-circle-outline" size={64} color="#d1d5db" />
+            <Text style={styles.emptyText}>No tasks yet</Text>
+            <Text style={styles.emptySubtext}>Tasks will appear here when assigned</Text>
+          </View>
         ) : (
           filteredTasks.map((task) => {
             const timeRemaining = getTimeRemaining(task);
+            const priorityColor = getPriorityColor(task);
+            const priorityLabel = getPriorityLabel(task);
+
             return (
               <Card 
                 key={task.id} 
@@ -150,46 +181,57 @@ export default function Tasks() {
                   task.status === 'failed' && styles.taskFailed,
                 ]}
               >
-                <Card.Content>
+                <Card.Content style={styles.taskContent}>
+                  {/* Task Header */}
                   <View style={styles.taskHeader}>
-                    <View style={styles.taskTitleContainer}>
-                      <Text style={styles.taskTitle}>{task.title}</Text>
+                    <View style={styles.taskLeft}>
                       {task.status === 'pending' && (
-                        <Chip 
-                          icon="star" 
-                          style={styles.creditChip}
-                          textStyle={{ fontSize: 12, color: '#FFD700' }}
+                        <TouchableOpacity
+                          style={styles.checkbox}
+                          onPress={() => completeTask(task.id)}
                         >
-                          +10 credits
-                        </Chip>
+                          <MaterialCommunityIcons name="check" size={20} color="#fff" />
+                        </TouchableOpacity>
                       )}
+                      {task.status === 'completed' && (
+                        <View style={[styles.checkbox, styles.checkboxCompleted]}>
+                          <MaterialCommunityIcons name="check" size={20} color="#fff" />
+                        </View>
+                      )}
+                      {task.status === 'failed' && (
+                        <View style={[styles.checkbox, styles.checkboxFailed]}>
+                          <MaterialCommunityIcons name="close" size={20} color="#fff" />
+                        </View>
+                      )}
+                      <View style={styles.taskTitleContainer}>
+                        <Text style={[
+                          styles.taskTitle,
+                          task.status === 'completed' && styles.taskTitleCompleted,
+                          task.status === 'failed' && styles.taskTitleFailed,
+                        ]}>
+                          {task.title}
+                        </Text>
+                        {task.status === 'pending' && (
+                          <View style={[styles.priorityBadge, { backgroundColor: priorityColor }]}>
+                            <Text style={styles.priorityText}>{priorityLabel}</Text>
+                          </View>
+                        )}
+                      </View>
                     </View>
-                    {task.status === 'pending' && user?.role !== 'admin' && (
-                      <IconButton
-                        icon="check-circle"
-                        iconColor="#4CAF50"
-                        size={32}
-                        onPress={() => completeTask(task.id)}
-                      />
-                    )}
-                    {task.status === 'completed' && (
-                      <MaterialCommunityIcons name="check-circle" size={32} color="#4CAF50" />
-                    )}
-                    {task.status === 'failed' && (
-                      <MaterialCommunityIcons name="close-circle" size={32} color="#f44336" />
-                    )}
                   </View>
 
+                  {/* Task Description */}
                   {task.description && (
                     <Text style={styles.taskDescription}>{task.description}</Text>
                   )}
 
-                  <View style={styles.taskInfo}>
+                  {/* Task Meta */}
+                  <View style={styles.taskMeta}>
                     {task.timer_seconds && task.status === 'pending' && (
-                      <View style={styles.infoItem}>
-                        <MaterialCommunityIcons name="timer" size={16} color="#2196F3" />
+                      <View style={styles.metaItem}>
+                        <MaterialCommunityIcons name="timer-outline" size={16} color="#6b7280" />
                         <Text style={[
-                          styles.infoText,
+                          styles.metaText,
                           timeRemaining === 'Expired' && styles.expiredText
                         ]}>
                           {timeRemaining || 'Calculating...'}
@@ -197,19 +239,29 @@ export default function Tasks() {
                       </View>
                     )}
                     {task.due_date && (
-                      <View style={styles.infoItem}>
-                        <MaterialCommunityIcons name="calendar" size={16} color="#888" />
-                        <Text style={styles.infoText}>
-                          {format(new Date(task.due_date), 'MMM dd, yyyy HH:mm')}
+                      <View style={styles.metaItem}>
+                        <MaterialCommunityIcons name="calendar-outline" size={16} color="#6b7280" />
+                        <Text style={styles.metaText}>
+                          {format(new Date(task.due_date), 'MMM dd, HH:mm')}
                         </Text>
+                      </View>
+                    )}
+                    {task.status === 'pending' && (
+                      <View style={styles.creditBadge}>
+                        <MaterialCommunityIcons name="star" size={14} color="#fbbf24" />
+                        <Text style={styles.creditText}>+10</Text>
                       </View>
                     )}
                   </View>
 
+                  {/* Completion Date */}
                   {task.completed_at && (
-                    <Text style={styles.completedText}>
-                      Completed: {format(new Date(task.completed_at), 'MMM dd, yyyy HH:mm')}
-                    </Text>
+                    <View style={styles.completionInfo}>
+                      <MaterialCommunityIcons name="check-circle" size={14} color="#10b981" />
+                      <Text style={styles.completionText}>
+                        Completed on {format(new Date(task.completed_at), 'MMM dd, HH:mm')}
+                      </Text>
+                    </View>
                   )}
                 </Card.Content>
               </Card>
@@ -224,102 +276,194 @@ export default function Tasks() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0c0c0c',
+    backgroundColor: '#f8f9fa',
   },
   header: {
-    padding: 16,
-    paddingBottom: 8,
+    padding: 20,
+    paddingBottom: 12,
   },
   title: {
-    color: '#fff',
     fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1f2937',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginTop: 4,
   },
   filterContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingBottom: 16,
   },
-  filterChip: {
+  filterTab: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: '#fff',
     marginRight: 8,
-    backgroundColor: '#1a1a1a',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  filterTabActive: {
+    backgroundColor: '#667eea',
+    borderColor: '#667eea',
+  },
+  filterText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  filterTextActive: {
+    color: '#fff',
   },
   scrollView: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 20,
   },
-  emptyCard: {
-    backgroundColor: '#1a1a1a',
-    marginTop: 40,
-  },
-  emptyContent: {
+  emptyState: {
     alignItems: 'center',
-    padding: 40,
+    justifyContent: 'center',
+    paddingVertical: 80,
   },
   emptyText: {
-    color: '#888',
     fontSize: 18,
+    fontWeight: '600',
+    color: '#6b7280',
     marginTop: 16,
   },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#9ca3af',
+    marginTop: 8,
+  },
   taskCard: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#fff',
+    borderRadius: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
   },
   taskCompleted: {
     borderLeftWidth: 4,
-    borderLeftColor: '#4CAF50',
-    opacity: 0.8,
+    borderLeftColor: '#10b981',
+    opacity: 0.9,
   },
   taskFailed: {
     borderLeftWidth: 4,
-    borderLeftColor: '#f44336',
+    borderLeftColor: '#ef4444',
     opacity: 0.6,
+  },
+  taskContent: {
+    paddingVertical: 12,
   },
   taskHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  taskLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  checkbox: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#667eea',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  checkboxCompleted: {
+    backgroundColor: '#10b981',
+  },
+  checkboxFailed: {
+    backgroundColor: '#ef4444',
   },
   taskTitleContainer: {
     flex: 1,
   },
   taskTitle: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 6,
+    lineHeight: 22,
   },
-  creditChip: {
+  taskTitleCompleted: {
+    textDecorationLine: 'line-through',
+    color: '#6b7280',
+  },
+  taskTitleFailed: {
+    textDecorationLine: 'line-through',
+    color: '#9ca3af',
+  },
+  priorityBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: '#2a2a2a',
-    marginTop: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  priorityText: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#fff',
+    letterSpacing: 0.5,
   },
   taskDescription: {
-    color: '#ccc',
     fontSize: 14,
-    marginTop: 8,
+    color: '#6b7280',
     lineHeight: 20,
+    marginBottom: 12,
+    marginLeft: 40,
   },
-  taskInfo: {
+  taskMeta: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 12,
-    gap: 16,
+    gap: 12,
+    marginLeft: 40,
   },
-  infoItem: {
+  metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
-  infoText: {
-    color: '#888',
+  metaText: {
     fontSize: 13,
+    color: '#6b7280',
   },
   expiredText: {
-    color: '#f44336',
-    fontWeight: 'bold',
+    color: '#ef4444',
+    fontWeight: '600',
   },
-  completedText: {
-    color: '#4CAF50',
+  creditBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#fef3c7',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  creditText: {
     fontSize: 12,
-    marginTop: 8,
+    fontWeight: '600',
+    color: '#d97706',
+  },
+  completionInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 12,
+    marginLeft: 40,
+  },
+  completionText: {
+    fontSize: 12,
+    color: '#10b981',
+    fontWeight: '500',
   },
 });
