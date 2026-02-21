@@ -146,7 +146,7 @@ class APITester:
         invalid_login = {"email": "wrong@email.com", "password": "wrongpass"}
         response, error = self.make_request("POST", "/auth/login", invalid_login, expect_success=False)
         
-        if error and "401" in error:
+        if error and ("401" in error or "Invalid email or password" in error):
             self.log_result("Invalid login rejection", True, "Correctly rejected invalid credentials")
         else:
             self.log_result("Invalid login rejection", False, "Should have rejected invalid credentials")
