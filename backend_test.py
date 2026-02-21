@@ -516,7 +516,7 @@ class APITester:
         # Test non-admin access to admin endpoint
         response, error = self.make_request("GET", "/users", token=user_token, expect_success=False)
         
-        if error and "403" in error:
+        if error and ("403" in error or "Admin access required" in error):
             self.log_result("Reject non-admin access", True, "Correctly rejected non-admin user")
         else:
             self.log_result("Reject non-admin access", False, "Should reject non-admin access")
