@@ -1,44 +1,61 @@
-diff --git a/frontend/.metro-cache/cache/dc/be22bb006d4f09cc6811c1fa749f8d9579d278d0f21f77092c61bc18e022276d84f443 b/frontend/.metro-cache/cache/dc/be22bb006d4f09cc6811c1fa749f8d9579d278d0f21f77092c61bc18e022276d84f443
-new file mode 100644
-index 0000000..876d4cd
---- /dev/null
-+++ b/frontend/.metro-cache/cache/dc/be22bb006d4f09cc6811c1fa749f8d9579d278d0f21f77092c61bc18e022276d84f443
-@@ -0,0 +1 @@
-+{"dependencies":[],"output":[{"data":{"code":"__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {\n  \"use strict\";\n\n  Object.defineProperty(exports, '__esModule', {\n    value: true\n  });\n  Object.defineProperty(exports, \"default\", {\n    enumerable: true,\n    get: function () {\n      return _default;\n    }\n  });\n  var _default = {\n    \"EXPO_PUBLIC_BACKEND_URL\": \"https://goaltask-manager.preview.emergentagent.com\"\n  };\n});","lineCount":16,"map":[[7,2,1,0,"Object"],[7,8,1,0],[7,9,1,0,"defineProperty"],[7,23,1,0],[7,24,1,0,"exports"],[7,31,1,0],[8,4,1,0,"enumerable"],[8,14,1,0],[9,4,1,0,"get"],[9,7,1,0],[9,18,1,0,"get"],[9,19,1,0],[10,6,1,0],[10,13,1,0,"_default"],[10,21,1,0],[11,4,1,0],[12,2,1,0],[13,2,1,0],[13,6,1,0,"_default"],[13,14,1,0],[13,17,1,15],[14,4,1,16],[14,29,1,41],[14,31,1,42],[15,2,1,94],[15,3,1,95],[16,0,1,96],[16,3]],"functionMap":{"names":["<global>"],"mappings":"AAA"},"hasCjsExports":false},"type":"js/module"}]}
-\ No newline at end of file
-diff --git a/frontend/.metro-cache/cache/e9/cb272589496aab6e1b5bb0f587e1339579d278d0f21f77092c61bc18e022276d84f443 b/frontend/.metro-cache/cache/e9/cb272589496aab6e1b5bb0f587e1339579d278d0f21f77092c61bc18e022276d84f443
-new file mode 100644
-index 0000000..876d4cd
---- /dev/null
-+++ b/frontend/.metro-cache/cache/e9/cb272589496aab6e1b5bb0f587e1339579d278d0f21f77092c61bc18e022276d84f443
-@@ -0,0 +1 @@
-+{"dependencies":[],"output":[{"data":{"code":"__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {\n  \"use strict\";\n\n  Object.defineProperty(exports, '__esModule', {\n    value: true\n  });\n  Object.defineProperty(exports, \"default\", {\n    enumerable: true,\n    get: function () {\n      return _default;\n    }\n  });\n  var _default = {\n    \"EXPO_PUBLIC_BACKEND_URL\": \"https://goaltask-manager.preview.emergentagent.com\"\n  };\n});","lineCount":16,"map":[[7,2,1,0,"Object"],[7,8,1,0],[7,9,1,0,"defineProperty"],[7,23,1,0],[7,24,1,0,"exports"],[7,31,1,0],[8,4,1,0,"enumerable"],[8,14,1,0],[9,4,1,0,"get"],[9,7,1,0],[9,18,1,0,"get"],[9,19,1,0],[10,6,1,0],[10,13,1,0,"_default"],[10,21,1,0],[11,4,1,0],[12,2,1,0],[13,2,1,0],[13,6,1,0,"_default"],[13,14,1,0],[13,17,1,15],[14,4,1,16],[14,29,1,41],[14,31,1,42],[15,2,1,94],[15,3,1,95],[16,0,1,96],[16,3]],"functionMap":{"names":["<global>"],"mappings":"AAA"},"hasCjsExports":false},"type":"js/module"}]}
-\ No newline at end of file
+diff --git a/frontend/app/(tabs)/dashboard.tsx b/frontend/app/(tabs)/dashboard.tsx
+index 4e8c4a4..1c42bdb 100644
+--- a/frontend/app/(tabs)/dashboard.tsx
++++ b/frontend/app/(tabs)/dashboard.tsx
+@@ -6,7 +6,6 @@ import { useAuth } from '../../contexts/AuthContext';
+ import { MaterialCommunityIcons } from '@expo/vector-icons';
+ import axios from 'axios';
+ import Constants from 'expo-constants';
+-import { LinearGradient } from 'expo-linear-gradient';
+ 
+ const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL;
+ 
 diff --git a/model.patch b/model.patch
-index d0fc62f..e69de29 100644
+index 28207c1..e69de29 100644
 --- a/model.patch
 +++ b/model.patch
-@@ -1,23 +0,0 @@
+@@ -1,44 +0,0 @@
+-diff --git a/frontend/.metro-cache/cache/dc/be22bb006d4f09cc6811c1fa749f8d9579d278d0f21f77092c61bc18e022276d84f443 b/frontend/.metro-cache/cache/dc/be22bb006d4f09cc6811c1fa749f8d9579d278d0f21f77092c61bc18e022276d84f443
+-new file mode 100644
+-index 0000000..876d4cd
+---- /dev/null
+-+++ b/frontend/.metro-cache/cache/dc/be22bb006d4f09cc6811c1fa749f8d9579d278d0f21f77092c61bc18e022276d84f443
+-@@ -0,0 +1 @@
+-+{"dependencies":[],"output":[{"data":{"code":"__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {\n  \"use strict\";\n\n  Object.defineProperty(exports, '__esModule', {\n    value: true\n  });\n  Object.defineProperty(exports, \"default\", {\n    enumerable: true,\n    get: function () {\n      return _default;\n    }\n  });\n  var _default = {\n    \"EXPO_PUBLIC_BACKEND_URL\": \"https://goaltask-manager.preview.emergentagent.com\"\n  };\n});","lineCount":16,"map":[[7,2,1,0,"Object"],[7,8,1,0],[7,9,1,0,"defineProperty"],[7,23,1,0],[7,24,1,0,"exports"],[7,31,1,0],[8,4,1,0,"enumerable"],[8,14,1,0],[9,4,1,0,"get"],[9,7,1,0],[9,18,1,0,"get"],[9,19,1,0],[10,6,1,0],[10,13,1,0,"_default"],[10,21,1,0],[11,4,1,0],[12,2,1,0],[13,2,1,0],[13,6,1,0,"_default"],[13,14,1,0],[13,17,1,15],[14,4,1,16],[14,29,1,41],[14,31,1,42],[15,2,1,94],[15,3,1,95],[16,0,1,96],[16,3]],"functionMap":{"names":["<global>"],"mappings":"AAA"},"hasCjsExports":false},"type":"js/module"}]}
+-\ No newline at end of file
+-diff --git a/frontend/.metro-cache/cache/e9/cb272589496aab6e1b5bb0f587e1339579d278d0f21f77092c61bc18e022276d84f443 b/frontend/.metro-cache/cache/e9/cb272589496aab6e1b5bb0f587e1339579d278d0f21f77092c61bc18e022276d84f443
+-new file mode 100644
+-index 0000000..876d4cd
+---- /dev/null
+-+++ b/frontend/.metro-cache/cache/e9/cb272589496aab6e1b5bb0f587e1339579d278d0f21f77092c61bc18e022276d84f443
+-@@ -0,0 +1 @@
+-+{"dependencies":[],"output":[{"data":{"code":"__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {\n  \"use strict\";\n\n  Object.defineProperty(exports, '__esModule', {\n    value: true\n  });\n  Object.defineProperty(exports, \"default\", {\n    enumerable: true,\n    get: function () {\n      return _default;\n    }\n  });\n  var _default = {\n    \"EXPO_PUBLIC_BACKEND_URL\": \"https://goaltask-manager.preview.emergentagent.com\"\n  };\n});","lineCount":16,"map":[[7,2,1,0,"Object"],[7,8,1,0],[7,9,1,0,"defineProperty"],[7,23,1,0],[7,24,1,0,"exports"],[7,31,1,0],[8,4,1,0,"enumerable"],[8,14,1,0],[9,4,1,0,"get"],[9,7,1,0],[9,18,1,0,"get"],[9,19,1,0],[10,6,1,0],[10,13,1,0,"_default"],[10,21,1,0],[11,4,1,0],[12,2,1,0],[13,2,1,0],[13,6,1,0,"_default"],[13,14,1,0],[13,17,1,15],[14,4,1,16],[14,29,1,41],[14,31,1,42],[15,2,1,94],[15,3,1,95],[16,0,1,96],[16,3]],"functionMap":{"names":["<global>"],"mappings":"AAA"},"hasCjsExports":false},"type":"js/module"}]}
+-\ No newline at end of file
 -diff --git a/model.patch b/model.patch
--index 9c10579..e69de29 100644
+-index d0fc62f..e69de29 100644
 ---- a/model.patch
 -+++ b/model.patch
--@@ -1,18 +0,0 @@
+-@@ -1,23 +0,0 @@
 --diff --git a/model.patch b/model.patch
---index aad23bd..e69de29 100644
+--index 9c10579..e69de29 100644
 ----- a/model.patch
 --+++ b/model.patch
---@@ -1,13 +0,0 @@
----diff --git a/backend/server.py b/backend/server.py
----index 0ef4ffc..38433ac 100644
------- a/backend/server.py
----+++ b/backend/server.py
----@@ -150,7 +150,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
----         return user
----     except jwt.ExpiredSignatureError:
----         raise HTTPException(status_code=401, detail="Token has expired")
-----    except jwt.JWTError:
----+    except jwt.InvalidTokenError:
----         raise HTTPException(status_code=401, detail="Could not validate credentials")
---- 
---- async def get_admin_user(current_user: dict = Depends(get_current_user)):
+--@@ -1,18 +0,0 @@
+---diff --git a/model.patch b/model.patch
+---index aad23bd..e69de29 100644
+------ a/model.patch
+---+++ b/model.patch
+---@@ -1,13 +0,0 @@
+----diff --git a/backend/server.py b/backend/server.py
+----index 0ef4ffc..38433ac 100644
+------- a/backend/server.py
+----+++ b/backend/server.py
+----@@ -150,7 +150,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
+----         return user
+----     except jwt.ExpiredSignatureError:
+----         raise HTTPException(status_code=401, detail="Token has expired")
+-----    except jwt.JWTError:
+----+    except jwt.InvalidTokenError:
+----         raise HTTPException(status_code=401, detail="Could not validate credentials")
+---- 
+---- async def get_admin_user(current_user: dict = Depends(get_current_user)):
