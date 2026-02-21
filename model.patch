@@ -1,13 +1,18 @@
-diff --git a/backend/server.py b/backend/server.py
-index 0ef4ffc..38433ac 100644
---- a/backend/server.py
-+++ b/backend/server.py
-@@ -150,7 +150,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
-         return user
-     except jwt.ExpiredSignatureError:
-         raise HTTPException(status_code=401, detail="Token has expired")
--    except jwt.JWTError:
-+    except jwt.InvalidTokenError:
-         raise HTTPException(status_code=401, detail="Could not validate credentials")
- 
- async def get_admin_user(current_user: dict = Depends(get_current_user)):
+diff --git a/model.patch b/model.patch
+index aad23bd..e69de29 100644
+--- a/model.patch
++++ b/model.patch
+@@ -1,13 +0,0 @@
+-diff --git a/backend/server.py b/backend/server.py
+-index 0ef4ffc..38433ac 100644
+---- a/backend/server.py
+-+++ b/backend/server.py
+-@@ -150,7 +150,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
+-         return user
+-     except jwt.ExpiredSignatureError:
+-         raise HTTPException(status_code=401, detail="Token has expired")
+--    except jwt.JWTError:
+-+    except jwt.InvalidTokenError:
+-         raise HTTPException(status_code=401, detail="Could not validate credentials")
+- 
+- async def get_admin_user(current_user: dict = Depends(get_current_user)):
