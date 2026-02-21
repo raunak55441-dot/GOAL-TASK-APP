@@ -374,28 +374,31 @@ async def check_expired_tasks():
         "start_time": {"$ne": None}
     }).to_list(1000)
     
+    # Collect expired task IDs
+    expired_timer_ids = [
+        task["_id"] for task in timer_tasks 
+        if (now - task["start_time"]).total_seconds() > task["timer_seconds"]
+    ]
+    
     failed_count = 0
-    for task in timer_tasks:
-        elapsed = (now - task["start_time"]).total_seconds()
-        if elapsed > task["timer_seconds"]:
-            await db.tasks.update_one(
-                {"_id": task["_id"]},
-                {"$set": {"status": "failed"}}
-            )
-            failed_count += 1
     
-    # Check due date-based tasks
-    due_tasks = await db.tasks.find({
-        "status": "pending",
-        "due_date": {"$lte": now}
-    }).to_list(1000)
-    
-    for task in due_tasks:
-        await db.tasks.update_one(
-            {"_id": task["_id"]},
+    # Bulk update timer-based expired tasks
+    if expired_timer_ids:
+        result = await db.tasks.update_many(
+            {"_id": {"$in": expired_timer_ids}},
             {"$set": {"status": "failed"}}
         )
-        failed_count += 1
+        failed_count += result.modified_count
+    
+    # Bulk update due date-based expired tasks
+    due_result = await db.tasks.update_many(
+        {
+            "status": "pending",
+            "due_date": {"$lte": now}
+        },
+        {"$set": {"status": "failed"}}
+    )
+    failed_count += due_result.modified_count
     
     return {"message": f"Marked {failed_count} tasks as failed"}
 
