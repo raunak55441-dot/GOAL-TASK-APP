@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
-import jwt
+from jose import jwt, JWTError
 from bson import ObjectId
 
 ROOT_DIR = Path(__file__).parent
