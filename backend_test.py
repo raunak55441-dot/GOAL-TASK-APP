@@ -16,15 +16,23 @@ import os
 BACKEND_URL = "https://goaltask-manager.preview.emergentagent.com/api"
 
 # Test data
+import random
+import string
+
+def generate_random_email(prefix):
+    """Generate a random email to avoid conflicts"""
+    random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
+    return f"{prefix}_{random_suffix}@taskapp.com"
+
 TEST_USERS = {
     "admin": {
-        "email": "admin@taskapp.com",
+        "email": generate_random_email("admin"),
         "password": "admin123",
         "name": "Admin User",
         "role": "admin"
     },
     "user": {
-        "email": "user@taskapp.com", 
+        "email": generate_random_email("user"), 
         "password": "user123",
         "name": "Regular User",
         "role": "user"
